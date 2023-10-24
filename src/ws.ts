@@ -38,6 +38,8 @@ export namespace WsClient {
 const kSocket = Symbol('socket')
 
 export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotBot.BaseConfig & WsServer.Config>> {
+  static inject = ['router']
+
   public wsServer?: WebSocketLayer
 
   constructor(ctx: C, bot: OneBotBot<C>) {
