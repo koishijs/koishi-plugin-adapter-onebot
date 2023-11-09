@@ -43,7 +43,7 @@ export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotB
   public wsServer?: WebSocketLayer
 
   constructor(ctx: C, bot: OneBotBot<C>) {
-    super()
+    super(ctx)
 
     const { path = '/onebot' } = bot.config as WsServer.Config
     this.wsServer = ctx.router.ws(path, (socket, { headers }) => {

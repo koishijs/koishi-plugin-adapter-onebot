@@ -96,6 +96,7 @@ export async function adaptMessage(
   payload.timestamp = data.time * 1000
   payload.guild = guildId && { id: guildId }
   payload.channel = channelId && { id: channelId, type: guildId ? Universal.Channel.Type.TEXT : Universal.Channel.Type.DIRECT }
+  return message
 }
 
 const decodeGuildChannelId = (data: OneBot.Message) => {
