@@ -7,4 +7,4 @@ globals:
   NodeJS: true
 
 extends:
-  - '@koishijs/eslint-config'
+  - '@cordisjs/eslint-config'
