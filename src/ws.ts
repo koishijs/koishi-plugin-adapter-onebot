@@ -1,5 +1,6 @@
-import { Adapter, Context, Logger, Quester, Schema, Time, Universal, WebSocketLayer } from 'koishi'
+import { Adapter, Context, Logger, Quester, Schema, Time, Universal } from 'koishi'
 import { OneBotBot } from './bot'
+import { WebSocketLayer } from '@koishijs/plugin-server'
 import { dispatchSession, Response, TimeoutError } from './utils'
 
 const logger = new Logger('onebot')
@@ -46,7 +47,7 @@ export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotB
     super(ctx)
 
     const { path = '/onebot' } = bot.config as WsServer.Config
-    this.wsServer = ctx.router.ws(path, (socket, { headers }) => {
+    this.wsServer = ctx.server.ws(path, (socket, { headers }) => {
       logger.debug('connected with', headers)
       if (headers['x-client-role'] !== 'Universal') {
         return socket.close(1008, 'invalid x-client-role')
