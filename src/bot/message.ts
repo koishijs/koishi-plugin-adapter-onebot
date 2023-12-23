@@ -1,4 +1,4 @@
-import { Context, h, MessageEncoder, pick, Universal } from 'koishi'
+import { Channel, Context, h, MessageEncoder, pick, Universal } from 'koishi'
 import { BaseBot } from './base'
 import { CQCode } from './cqcode'
 
@@ -18,12 +18,21 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
   stack: State[] = [new State('message')]
   children: CQCode[] = []
 
+  override async prepare(): Promise<void> {
+    super.prepare()
+
+    this.session.isDirect = this.channelId.startsWith('private:')
+    this.session.channel.type = this.session.isDirect ? Channel.Type.DIRECT : Channel.Type.TEXT
+    this.session.subtype = this.session.isDirect ? 'private' : 'group'
+    if (!this.session.isDirect) this.guildId = this.channelId
+  }
+
   async forward() {
     if (!this.stack[0].children.length) return
     const session = this.bot.session()
-    session.messageId = this.guildId
-      ? '' + await this.bot.internal.sendGroupForwardMsg(this.guildId, this.stack[0].children)
-      : '' + await this.bot.internal.sendPrivateForwardMsg(this.channelId.slice(8), this.stack[0].children)
+    session.messageId = this.session.isDirect
+      ? '' + await this.bot.internal.sendPrivateForwardMsg(this.channelId.slice(8), this.stack[0].children)
+      : '' + await this.bot.internal.sendGroupForwardMsg(this.guildId, this.stack[0].children)
     session.userId = this.bot.selfId
     session.channelId = this.session.channelId
     session.guildId = this.session.guildId
@@ -81,9 +90,9 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
     const session = this.bot.session()
     session.messageId = this.bot.parent
       ? '' + await this.bot.internal.sendGuildChannelMsg(this.guildId, this.channelId, this.children)
-      : this.guildId
-        ? '' + await this.bot.internal.sendGroupMsg(this.guildId, this.children)
-        : '' + await this.bot.internal.sendPrivateMsg(this.channelId.slice(8), this.children)
+      : this.session.isDirect
+        ? '' + await this.bot.internal.sendPrivateMsg(this.channelId.slice(8), this.children)
+        : '' + await this.bot.internal.sendGroupMsg(this.guildId, this.children)
     session.userId = this.bot.selfId
     session.channelId = this.session.channelId
     session.guildId = this.session.guildId
