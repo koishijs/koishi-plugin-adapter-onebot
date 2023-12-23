@@ -1,8 +1,7 @@
-import { Adapter, Context, Logger, Quester, Schema, Time, Universal, WebSocketLayer } from 'koishi'
+import { Adapter, Context, Logger, Quester, Schema, Time, Universal } from 'koishi'
+import { WebSocketLayer } from '@koishijs/plugin-server'
 import { OneBotBot } from './bot'
 import { dispatchSession, Response, TimeoutError } from './utils'
-
-const logger = new Logger('onebot')
 
 interface SharedConfig<T = 'ws' | 'ws-reverse'> {
   protocol: T
@@ -38,16 +37,18 @@ export namespace WsClient {
 const kSocket = Symbol('socket')
 
 export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotBot.BaseConfig & WsServer.Config>> {
-  static inject = ['router']
+  static inject = ['server']
 
+  public logger: Logger
   public wsServer?: WebSocketLayer
 
   constructor(ctx: C, bot: OneBotBot<C>) {
     super(ctx)
+    this.logger = ctx.logger('onebot')
 
     const { path = '/onebot' } = bot.config as WsServer.Config
-    this.wsServer = ctx.router.ws(path, (socket, { headers }) => {
-      logger.debug('connected with', headers)
+    this.wsServer = ctx.server.ws(path, (socket, { headers }) => {
+      this.logger.debug('connected with', headers)
       if (headers['x-client-role'] !== 'Universal') {
         return socket.close(1008, 'invalid x-client-role')
       }
@@ -60,7 +61,7 @@ export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotB
     })
 
     ctx.on('dispose', () => {
-      logger.debug('ws server closing')
+      this.logger.debug('ws server closing')
       this.wsServer.close()
     })
   }
@@ -92,11 +93,11 @@ export function accept(socket: Universal.WebSocket, bot: OneBotBot<Context, OneB
     try {
       parsed = JSON.parse(data.toString())
     } catch (error) {
-      return logger.warn('cannot parse message', data)
+      return bot.logger.warn('cannot parse message', data)
     }
 
     if ('post_type' in parsed) {
-      logger.debug('receive %o', parsed)
+      bot.logger.debug('[receive] %o', parsed)
       dispatchSession(bot, parsed)
     } else if (parsed.echo in listeners) {
       listeners[parsed.echo](parsed)

@@ -1,11 +1,9 @@
-import { h, hyphenate, Logger, Universal } from 'koishi'
+import { h, hyphenate, Universal } from 'koishi'
 import * as qface from 'qface'
 import { BaseBot, CQCode } from './bot'
 import * as OneBot from './types'
 
 export * from './types'
-
-const logger = new Logger('onebot')
 
 export const decodeUser = (user: OneBot.AccountInfo): Universal.User => ({
   id: user.tiny_id || user.user_id.toString(),
@@ -84,7 +82,7 @@ export async function adaptMessage(
   if (message.elements[0]?.type === 'reply') {
     const reply = message.elements.shift()
     message.quote = await bot.getMessage(channelId, reply.attrs.id).catch((error) => {
-      logger.warn(error)
+      bot.logger.warn(error)
       return undefined
     })
   }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { camelize, Dict, Logger } from 'koishi'
-import { CQCode } from './bot'
+import { camelize, Dict } from 'koishi'
+import { BaseBot, CQCode } from './bot'
 
 export interface Response {
   status: string
@@ -541,15 +541,15 @@ class SenderError extends Error {
   }
 }
 
-const logger = new Logger('onebot')
-
 export class Internal {
   _request?(action: string, params: Dict): Promise<Response>
 
+  constructor(public readonly bot: BaseBot) {}
+
   private async _get<T = any>(action: string, params = {}): Promise<T> {
-    logger.debug('[request] %s %o', action, params)
+    this.bot.logger.debug('[request] %s %o', action, params)
     const response = await this._request(action, params)
-    logger.debug('[response] %o', response)
+    this.bot.logger.debug('[response] %o', response)
     const { data, retcode } = response
     if (retcode === 0) return data
     throw new SenderError(params, action, retcode)
@@ -578,7 +578,7 @@ export class Internal {
   private static prepareArg(params: string[], args: any[]) {
     const fixedArg = Object.fromEntries(params.map((name, index) => [name, args[index]]))
     for (const key in fixedArg) {
-      if (key.endsWith("_id")) fixedArg[key] = +fixedArg[key]
+      if (key.endsWith('_id')) fixedArg[key] = +fixedArg[key]
     }
     return fixedArg
   }

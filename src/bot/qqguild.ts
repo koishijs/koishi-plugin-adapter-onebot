@@ -15,7 +15,7 @@ export class QQGuildBot<C extends Context> extends BaseBot<C> {
   hidden = true
 
   constructor(ctx: C, config: QQGuildBot.Config) {
-    super(ctx, config)
+    super(ctx, config, 'qqguild')
     this.platform = 'qqguild'
     this.selfId = config.profile.tiny_id
     this.parent = config.parent

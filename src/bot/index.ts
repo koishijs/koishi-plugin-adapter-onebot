@@ -14,10 +14,9 @@ export class OneBotBot<C extends Context, T extends OneBotBot.Config = OneBotBot
   public guildBot: QQGuildBot<C>
 
   constructor(ctx: C, config: T) {
-    super(ctx, config)
+    super(ctx, config, 'onebot')
     this.selfId = config.selfId
-    this.platform = 'onebot'
-    this.internal = new OneBot.Internal()
+    this.internal = new OneBot.Internal(this)
     this.user.avatar = `http://q.qlogo.cn/headimg_dl?dst_uin=${config.selfId}&spec=640`
 
     if (config.protocol === 'http') {

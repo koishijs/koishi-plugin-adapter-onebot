@@ -1,12 +1,11 @@
-import { Adapter, Context, Logger, Quester, Schema } from 'koishi'
+import { Adapter, Context, Quester, Schema } from 'koishi'
+import {} from '@koishijs/plugin-server'
 import { OneBotBot } from './bot'
 import { dispatchSession } from './utils'
 import { createHmac } from 'crypto'
 
-const logger = new Logger('onebot')
-
 export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBot<C>> {
-  static inject = ['router']
+  static inject = ['server']
 
   declare bots: OneBotBot<C>[]
 
@@ -32,7 +31,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
 
   async connect(bot: OneBotBot<C, OneBotBot.Config & HttpServer.Config>) {
     const { secret, path = '/onebot' } = bot.config
-    bot.ctx.router.post(path, (ctx) => {
+    bot.ctx.server.post(path, (ctx) => {
       if (secret) {
         // no signature
         const signature = ctx.headers['x-signature']
@@ -47,7 +46,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
       const bot = this.bots.find(bot => bot.selfId === selfId)
       if (!bot) return ctx.status = 403
 
-      logger.debug('receive %o', ctx.request.body)
+      bot.logger.debug('[receive] %o', ctx.request.body)
       dispatchSession(bot, ctx.request.body)
     })
   }
