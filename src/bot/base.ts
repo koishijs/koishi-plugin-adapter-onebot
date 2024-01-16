@@ -4,6 +4,7 @@ import { OneBotMessageEncoder } from './message'
 
 export class BaseBot<C extends Context = Context, T extends BaseBot.Config = BaseBot.Config> extends Bot<C, T> {
   static MessageEncoder = OneBotMessageEncoder
+  static inject = ['http']
 
   public parent?: BaseBot
   public internal: OneBot.Internal

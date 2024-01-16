@@ -74,8 +74,29 @@ export async function adaptMessage(
         h.image(qface.getUrl(id)),
       ])
     },
+    image(attrs) {
+      return h('img', {
+        src: attrs.url || attrs.file,
+        ...attrs,
+      })
+    },
     record(attrs) {
-      return h('audio', attrs)
+      return h('audio', {
+        src: attrs.url || attrs.file,
+        ...attrs,
+      })
+    },
+    video(attrs) {
+      return h('video', {
+        src: attrs.url || attrs.file,
+        ...attrs,
+      })
+    },
+    file(attrs) {
+      return h('file', {
+        src: attrs.url || attrs.file,
+        ...attrs,
+      })
     },
   })
   const [guildId, channelId] = decodeGuildChannelId(data)
