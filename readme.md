@@ -46,7 +46,7 @@
 
 ## 内部 API
 
-你可以通过 `bot.internal` 或 `session.onebot` 访问内部 API，参见 [访问内部接口](../../guide/adapter/bot.md#访问内部接口)。
+你可以通过 `bot.internal` 或 `session.onebot` 访问内部 API，参见 [访问内部接口](https://koishi.chat/zh-CN/guide/adapter/bot.html#internal-access)。
 
 ### OneBot v11 标准 API
 
