@@ -27,7 +27,7 @@
 ### config.proxyAgent
 
 - 类型: `string`
-- 默认值: [`app.config.request.proxyAgent`](../../api/core/app.md#options-request-proxyagent)
+- 默认值: [`app.config.request.proxyAgent`](https://koishi.chat/zh-CN/api/core/app.html#options-request-proxyagent)
 
 请求时默认使用的网络代理。
 
@@ -90,7 +90,7 @@
 
 ### go-cqhttp 扩展 API
 
-- [`onebot.sendGroupForwardMsg()`](https://docs.go-cqhttp.org/api/#发送合并转发-群)
+- [`onebot.sendGroupForwardMsg()`](https://docs.go-cqhttp.org/api/#发送合并转发-群聊)
 - [`onebot.markMsgAsRead()`](https://docs.go-cqhttp.org/api/#标记消息已读)
 - [`onebot.sendGroupSign()`](https://docs.go-cqhttp.org/api/#群打卡)
 - [`onebot.qidianGetAccountInfo()`](https://docs.go-cqhttp.org/api/#获取企点账号信息)
@@ -111,7 +111,7 @@
 - [`onebot.deleteGroupFile()`](https://docs.go-cqhttp.org/api/#删除群文件)
 - [`onebot.getGroupFileUrl()`](https://docs.go-cqhttp.org/api/#获取群文件资源链接)
 - [`onebot.getGroupAtAllRemain()`](https://docs.go-cqhttp.org/api/#获取群-全体成员-剩余次数)
-- [`onebot.getVipInfo()`](https://docs.go-cqhttp.org/api/#获取VIP信息)
+- [`onebot.getVipInfo()`](https://github.com/Mrs4s/go-cqhttp/blob/master/docs/cqhttp.md?plain=1#L1081)
 - [`onebot.sendGroupNotice()`](https://docs.go-cqhttp.org/api/#发送群公告)
 - [`onebot.getGroupNotice()`](https://docs.go-cqhttp.org/api/#获取群公告)
 - [`onebot.reloadEventFilter()`](https://docs.go-cqhttp.org/api/#重载事件过滤器)
@@ -124,17 +124,17 @@
 - [`onebot.checkUrlSafely()`](https://docs.go-cqhttp.org/api/#检查链接安全性)
 - [`onebot.getModelShow()`](https://docs.go-cqhttp.org/api/#获取在线机型)
 - [`onebot.setModelShow()`](https://docs.go-cqhttp.org/api/#设置在线机型)
-- [`onebot.delete_unidirectional_friend()`](https://docs.go-cqhttp.org/api/#删除单项好友)
+- [`onebot.delete_unidirectional_friend()`](https://docs.go-cqhttp.org/api/#删除单向好友)
 - [`onebot.send_private_forward_msg()`](https://docs.go-cqhttp.org/api/#发送合并转发-好友)
 
 ### 频道 API
 
-- [`onebot.getGuildServiceProfile()`](https://github.com/Mrs4s/go-cqhttp/blob/master/docs/guild.md#获取频道系统内BOT的资料)
-- [`onebot.getGuildList()`](https://github.com/Mrs4s/go-cqhttp/blob/master/docs/guild.md#获取频道列表)
-- [`onebot.getGuildMetaByGuest()`](https://github.com/Mrs4s/go-cqhttp/blob/master/docs/guild.md#通过访客获取频道元数据)
-- [`onebot.getGuildChannelList()`](https://github.com/Mrs4s/go-cqhttp/blob/master/docs/guild.md#获取子频道列表)
-- [`onebot.getGuildMembers()`](https://github.com/Mrs4s/go-cqhttp/blob/master/docs/guild.md#获取频道成员列表)
-- [`onebot.sendGuildChannelMsg()`](https://github.com/Mrs4s/go-cqhttp/blob/master/docs/guild.md#发送信息到子频道)
+- [`onebot.getGuildServiceProfile()`](https://docs.go-cqhttp.org/api/guild.html#获取频道系统内bot的资料)
+- [`onebot.getGuildList()`](https://docs.go-cqhttp.org/api/guild.html#获取频道列表)
+- [`onebot.getGuildMetaByGuest()`](https://docs.go-cqhttp.org/api/guild.html#通过访客获取频道元数据)
+- [`onebot.getGuildChannelList()`](https://docs.go-cqhttp.org/api/guild.html#获取子频道列表)
+- [`onebot.getGuildMembers()`](https://docs.go-cqhttp.org/api/guild.html#获取频道成员列表)
+- [`onebot.sendGuildChannelMsg()`](https://docs.go-cqhttp.org/api/guild.html#发送信息到子频道)
 
 ## 许可证
 
