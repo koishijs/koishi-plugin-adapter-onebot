@@ -31,7 +31,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
 
   async connect(bot: OneBotBot<C, OneBotBot.Config & HttpServer.Config>) {
     const { secret, path = '/onebot' } = bot.config
-    bot.ctx.server.post(path, (ctx) => {
+    this.ctx.server.post(path, (ctx) => {
       if (secret) {
         // no signature
         const signature = ctx.headers['x-signature']
