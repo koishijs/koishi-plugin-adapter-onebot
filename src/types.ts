@@ -411,6 +411,8 @@ export interface Internal {
   sendPrivateMsgAsync(user_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<void>
   sendGroupMsg(group_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<number>
   sendGroupMsgAsync(group_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<void>
+  sendMsg(user_id: id,group_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<number>;
+  sendMsgAsync(user_id: id,group_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<void>;
   sendGroupForwardMsg(group_id: id, messages: readonly CQCode[]): Promise<number>
   sendGroupForwardMsgAsync(group_id: id, messages: readonly CQCode[]): Promise<void>
   sendPrivateForwardMsg(user_id: id, messages: readonly CQCode[]): Promise<number>
