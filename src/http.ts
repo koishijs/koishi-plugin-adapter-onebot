@@ -1,4 +1,5 @@
-import { Adapter, Context, Quester, Schema } from 'koishi'
+import { Adapter, Context, Schema } from 'koishi'
+import { HTTP } from 'undios'
 import {} from '@koishijs/plugin-server'
 import { OneBotBot } from './bot'
 import { dispatchSession } from './utils'
@@ -12,8 +13,8 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
   async fork(ctx: C, bot: OneBotBot<C, OneBotBot.Config & HttpServer.Config>) {
     super.fork(ctx, bot)
     const config = bot.config
-    const { endpoint, token } = config
-    if (!endpoint) return
+    const { endpoint, baseURL, token } = config
+    if (!(baseURL ?? endpoint)) return
 
     const http = ctx.http.extend(config).extend({
       headers: {
@@ -53,7 +54,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
 }
 
 export namespace HttpServer {
-  export interface Config extends Quester.Config {
+  export interface Config extends HTTP.Config {
     protocol: 'http'
     path?: string
     secret?: string
@@ -65,6 +66,6 @@ export namespace HttpServer {
       path: Schema.string().description('服务器监听的路径。').default('/onebot'),
       secret: Schema.string().description('接收事件推送时用于验证的字段，应该与 OneBot 的 secret 配置保持一致。').role('secret'),
     }).description('连接设置'),
-    Quester.createConfig(true),
+    HTTP.createConfig(true),
   ])
 }

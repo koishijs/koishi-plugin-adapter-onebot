@@ -20,11 +20,11 @@ export class OneBotBot<C extends Context, T extends OneBotBot.Config = OneBotBot
     this.user.avatar = `http://q.qlogo.cn/headimg_dl?dst_uin=${config.selfId}&spec=640`
 
     if (config.protocol === 'http') {
-      ctx.plugin(HttpServer, this)
+      ctx.plugin(HttpServer, this as any)
     } else if (config.protocol === 'ws') {
       ctx.plugin(WsClient, this as any)
     } else if (config.protocol === 'ws-reverse') {
-      ctx.plugin(WsServer, this)
+      ctx.plugin(WsServer, this as any)
     }
   }
 

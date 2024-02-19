@@ -1,5 +1,6 @@
-import { Adapter, Context, Logger, Quester, Schema, Time, Universal } from 'koishi'
+import { Adapter, Context, Logger, Schema, Time } from 'koishi'
 import { WebSocketLayer } from '@koishijs/plugin-server'
+import { HTTP, WebSocket } from 'undios'
 import { OneBotBot } from './bot'
 import { dispatchSession, Response, TimeoutError } from './utils'
 
@@ -9,27 +10,27 @@ interface SharedConfig<T = 'ws' | 'ws-reverse'> {
 }
 
 export class WsClient<C extends Context = Context> extends Adapter.WsClient<C, OneBotBot<C, OneBotBot.BaseConfig & WsClient.Config>> {
-  accept(socket: Universal.WebSocket): void {
+  accept(socket: WebSocket): void {
     accept(socket, this.bot)
   }
 
   prepare() {
-    const { token, endpoint } = this.bot.config
+    const { token, endpoint, baseURL } = this.bot.config
     const http = this.ctx.http.extend(this.bot.config)
     if (token) http.config.headers.Authorization = `Bearer ${token}`
-    return http.ws(endpoint)
+    return http.ws(baseURL ?? endpoint)
   }
 }
 
 export namespace WsClient {
-  export interface Config extends SharedConfig<'ws'>, Quester.Config, Adapter.WsClientConfig {}
+  export interface Config extends SharedConfig<'ws'>, HTTP.Config, Adapter.WsClientConfig {}
 
   export const Config: Schema<Config> = Schema.intersect([
     Schema.object({
       protocol: Schema.const('ws').required(process.env.KOISHI_ENV !== 'browser'),
       responseTimeout: Schema.natural().role('time').default(Time.minute).description('等待响应的时间 (单位为毫秒)。'),
     }).description('连接设置'),
-    Quester.createConfig(true),
+    HTTP.createConfig(true),
     Adapter.WsClientConfig,
   ])
 }
@@ -87,7 +88,7 @@ export namespace WsServer {
 let counter = 0
 const listeners: Record<number, (response: Response) => void> = {}
 
-export function accept(socket: Universal.WebSocket, bot: OneBotBot<Context, OneBotBot.BaseConfig & SharedConfig>) {
+export function accept(socket: WebSocket, bot: OneBotBot<Context, OneBotBot.BaseConfig & SharedConfig>) {
   socket.addEventListener('message', ({ data }) => {
     let parsed: any
     try {
