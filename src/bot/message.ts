@@ -81,9 +81,9 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
     const session = this.bot.session()
     session.messageId = this.bot.parent
       ? '' + await this.bot.internal.sendGuildChannelMsg(this.guildId, this.channelId, this.children)
-      : this.guildId
-        ? '' + await this.bot.internal.sendGroupMsg(this.guildId, this.children)
-        : '' + await this.bot.internal.sendPrivateMsg(this.channelId.slice(8), this.children)
+      : this.channelId.startsWith('private:')
+        ? '' + await this.bot.internal.sendPrivateMsg(this.channelId.slice(8), this.children)
+        : '' + await this.bot.internal.sendGroupMsg(this.channelId, this.children);
     session.userId = this.bot.selfId
     session.channelId = this.session.channelId
     session.guildId = this.session.guildId
