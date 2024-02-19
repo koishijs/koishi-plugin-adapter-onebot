@@ -21,9 +21,9 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
   async forward() {
     if (!this.stack[0].children.length) return
     const session = this.bot.session()
-    session.messageId = this.guildId
-      ? '' + await this.bot.internal.sendGroupForwardMsg(this.guildId, this.stack[0].children)
-      : '' + await this.bot.internal.sendPrivateForwardMsg(this.channelId.slice(8), this.stack[0].children)
+    session.messageId = this.channelId.startsWith('private:')
+      ? '' + await this.bot.internal.sendPrivateForwardMsg(this.channelId.slice(8), this.stack[0].children)
+      : '' + await this.bot.internal.sendGroupForwardMsg(this.guildId, this.stack[0].children)
     session.userId = this.bot.selfId
     session.channelId = this.session.channelId
     session.guildId = this.session.guildId
