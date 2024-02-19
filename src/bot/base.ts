@@ -9,11 +9,11 @@ export class BaseBot<C extends Context = Context, T extends BaseBot.Config = Bas
   public parent?: BaseBot
   public internal: OneBot.Internal
 
-  sendMessage(channelId: string, fragment: Fragment, guildId?: string, options?: Universal.SendOptions) {
+  createMessage(channelId: string, fragment: Fragment, guildId?: string, options?: Universal.SendOptions) {
     if (!this.parent && !channelId.startsWith('private:')) {
       guildId = channelId
     }
-    return super.sendMessage(channelId, fragment, guildId, options)
+    return super.createMessage(channelId, fragment, guildId, options)
   }
 
   async createDirectChannel(userId: string) {
