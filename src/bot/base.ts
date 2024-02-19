@@ -1,6 +1,6 @@
-import { Bot, Context, Fragment, Schema, Universal } from 'koishi'
+import { Bot, Context, Schema, Universal } from 'koishi'
 import * as OneBot from '../utils'
-import { OneBotMessageEncoder } from './message'
+import { OneBotMessageEncoder, PRIVATE_PFX } from './message'
 
 export class BaseBot<C extends Context = Context, T extends BaseBot.Config = BaseBot.Config> extends Bot<C, T> {
   static MessageEncoder = OneBotMessageEncoder
@@ -9,15 +9,8 @@ export class BaseBot<C extends Context = Context, T extends BaseBot.Config = Bas
   public parent?: BaseBot
   public internal: OneBot.Internal
 
-  createMessage(channelId: string, fragment: Fragment, guildId?: string, options?: Universal.SendOptions) {
-    if (!this.parent && !channelId.startsWith('private:')) {
-      guildId = channelId
-    }
-    return super.createMessage(channelId, fragment, guildId, options)
-  }
-
   async createDirectChannel(userId: string) {
-    return { id: 'private:' + userId, type: Universal.Channel.Type.DIRECT }
+    return { id: `${PRIVATE_PFX}${userId}`, type: Universal.Channel.Type.DIRECT }
   }
 
   async getMessage(channelId: string, messageId: string) {
