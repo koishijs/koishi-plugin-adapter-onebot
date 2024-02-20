@@ -20,10 +20,22 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
   stack: State[] = [new State('message')]
   children: CQCode[] = []
 
+  override async prepare(): Promise<void> {
+    super.prepare()
+    const { event: { channel } } = this.session
+    if (!channel.type) {
+      channel.type = channel.id.startsWith(PRIVATE_PFX)
+        ? Universal.Channel.Type.DIRECT
+        : Universal.Channel.Type.TEXT
+    }
+    this.session.isDirect = channel.type === Universal.Channel.Type.DIRECT
+    if (!this.session.isDirect) this.guildId = this.channelId
+  }
+
   async forward() {
     if (!this.stack[0].children.length) return
     const session = this.bot.session()
-    session.messageId = this.channelId.startsWith(PRIVATE_PFX)
+    session.messageId = this.session.event.channel.type === Universal.Channel.Type.DIRECT
       ? '' + await this.bot.internal.sendPrivateForwardMsg(this.channelId.slice(PRIVATE_PFX.length), this.stack[0].children)
       : '' + await this.bot.internal.sendGroupForwardMsg(this.channelId, this.stack[0].children)
     session.userId = this.bot.selfId
@@ -83,7 +95,7 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
     const session = this.bot.session()
     session.messageId = this.bot.parent
       ? '' + await this.bot.internal.sendGuildChannelMsg(this.guildId, this.channelId, this.children)
-      : this.channelId.startsWith(PRIVATE_PFX)
+      : this.session.event.channel.type === Universal.Channel.Type.DIRECT
         ? '' + await this.bot.internal.sendPrivateMsg(this.channelId.slice(PRIVATE_PFX.length), this.children)
         : '' + await this.bot.internal.sendGroupMsg(this.channelId, this.children)
     session.userId = this.bot.selfId
