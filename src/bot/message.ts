@@ -28,7 +28,6 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
         ? Universal.Channel.Type.DIRECT
         : Universal.Channel.Type.TEXT
     }
-    this.session.isDirect = channel.type === Universal.Channel.Type.DIRECT
     if (!this.session.isDirect) this.guildId = this.channelId
   }
 
