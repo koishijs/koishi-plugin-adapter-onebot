@@ -13,8 +13,8 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
   async fork(ctx: C, bot: OneBotBot<C, OneBotBot.Config & HttpServer.Config>) {
     super.fork(ctx, bot)
     const config = bot.config
-    const { endpoint, baseURL, token } = config
-    if (!(baseURL ?? endpoint)) return
+    const { endpoint, token } = config
+    if (!endpoint) return
 
     const http = ctx.http.extend(config).extend({
       headers: {

@@ -15,10 +15,10 @@ export class WsClient<C extends Context = Context> extends Adapter.WsClient<C, O
   }
 
   prepare() {
-    const { token, endpoint, baseURL } = this.bot.config
+    const { token, endpoint } = this.bot.config
     const http = this.ctx.http.extend(this.bot.config)
     if (token) http.config.headers.Authorization = `Bearer ${token}`
-    return http.ws(baseURL ?? endpoint)
+    return http.ws(endpoint)
   }
 }
 
