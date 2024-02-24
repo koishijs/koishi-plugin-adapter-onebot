@@ -14,16 +14,29 @@ class State {
   constructor(public type: 'message' | 'forward' | 'reply') {}
 }
 
+export const PRIVATE_PFX = 'private:'
+
 export class OneBotMessageEncoder<C extends Context = Context> extends MessageEncoder<C, BaseBot<C>> {
   stack: State[] = [new State('message')]
   children: CQCode[] = []
 
+  override async prepare(): Promise<void> {
+    super.prepare()
+    const { event: { channel } } = this.session
+    if (!channel.type) {
+      channel.type = channel.id.startsWith(PRIVATE_PFX)
+        ? Universal.Channel.Type.DIRECT
+        : Universal.Channel.Type.TEXT
+    }
+    if (!this.session.isDirect) this.guildId = this.channelId
+  }
+
   async forward() {
     if (!this.stack[0].children.length) return
     const session = this.bot.session()
-    session.messageId = this.guildId
-      ? '' + await this.bot.internal.sendGroupForwardMsg(this.guildId, this.stack[0].children)
-      : '' + await this.bot.internal.sendPrivateForwardMsg(this.channelId.slice(8), this.stack[0].children)
+    session.messageId = this.session.event.channel.type === Universal.Channel.Type.DIRECT
+      ? '' + await this.bot.internal.sendPrivateForwardMsg(this.channelId.slice(PRIVATE_PFX.length), this.stack[0].children)
+      : '' + await this.bot.internal.sendGroupForwardMsg(this.channelId, this.stack[0].children)
     session.userId = this.bot.selfId
     session.channelId = this.session.channelId
     session.guildId = this.session.guildId
@@ -81,9 +94,9 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
     const session = this.bot.session()
     session.messageId = this.bot.parent
       ? '' + await this.bot.internal.sendGuildChannelMsg(this.guildId, this.channelId, this.children)
-      : this.guildId
-        ? '' + await this.bot.internal.sendGroupMsg(this.guildId, this.children)
-        : '' + await this.bot.internal.sendPrivateMsg(this.channelId.slice(8), this.children)
+      : this.session.event.channel.type === Universal.Channel.Type.DIRECT
+        ? '' + await this.bot.internal.sendPrivateMsg(this.channelId.slice(PRIVATE_PFX.length), this.children)
+        : '' + await this.bot.internal.sendGroupMsg(this.channelId, this.children)
     session.userId = this.bot.selfId
     session.channelId = this.session.channelId
     session.guildId = this.session.guildId
