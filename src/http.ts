@@ -52,7 +52,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
   }
 }
 
-export namespace HttpServer 
+export namespace HttpServer {
   export interface Options extends HTTP.Config {
     protocol: 'http'
     path?: string
