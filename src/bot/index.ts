@@ -120,14 +120,14 @@ export namespace OneBotBot {
       : Schema.union(['http', 'ws', 'ws-reverse']).description('选择要使用的协议。').default('ws-reverse'),
   })
 
-  export type Config = BaseConfig & (HttpServer.Config | WsServer.Config | WsClient.Config)
+  export type Config = BaseConfig & (HttpServer.Options | WsServer.Options | WsClient.Options)
 
   export const Config: Schema<Config> = Schema.intersect([
     BaseConfig,
     Schema.union([
-      HttpServer.Config,
-      WsClient.Config,
-      WsServer.Config,
+      HttpServer.Options,
+      WsClient.Options,
+      WsServer.Options,
     ]),
     Schema.object({
       advanced: BaseBot.AdvancedConfig,
