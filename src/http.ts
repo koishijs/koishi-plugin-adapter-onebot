@@ -10,7 +10,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
 
   declare bots: OneBotBot<C>[]
 
-  async fork(ctx: C, bot: OneBotBot<C, OneBotBot.Config & HttpServer.Config>) {
+  async fork(ctx: C, bot: OneBotBot<C, OneBotBot.Config & HttpServer.Options>) {
     super.fork(ctx, bot)
     const config = bot.config
     const { endpoint, token } = config
@@ -18,7 +18,6 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
 
     const http = ctx.http.extend(config).extend({
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Token ${token}`,
       },
     })
@@ -30,7 +29,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
     return bot.initialize()
   }
 
-  async connect(bot: OneBotBot<C, OneBotBot.Config & HttpServer.Config>) {
+  async connect(bot: OneBotBot<C, OneBotBot.Config & HttpServer.Options>) {
     const { secret, path = '/onebot' } = bot.config
     this.ctx.server.post(path, (ctx) => {
       if (secret) {
@@ -54,13 +53,13 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
 }
 
 export namespace HttpServer {
-  export interface Config extends HTTP.Config {
+  export interface Options extends HTTP.Config {
     protocol: 'http'
     path?: string
     secret?: string
   }
 
-  export const Config: Schema<Config> = Schema.intersect([
+  export const Options: Schema<Options> = Schema.intersect([
     Schema.object({
       protocol: Schema.const('http').required(),
       path: Schema.string().description('服务器监听的路径。').default('/onebot'),

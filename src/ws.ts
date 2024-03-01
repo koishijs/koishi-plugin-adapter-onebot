@@ -9,7 +9,7 @@ interface SharedConfig<T = 'ws' | 'ws-reverse'> {
   responseTimeout?: number
 }
 
-export class WsClient<C extends Context = Context> extends Adapter.WsClient<C, OneBotBot<C, OneBotBot.BaseConfig & WsClient.Config>> {
+export class WsClient<C extends Context = Context> extends Adapter.WsClient<C, OneBotBot<C, OneBotBot.BaseConfig & WsClient.Options>> {
   accept(socket: WebSocket): void {
     accept(socket, this.bot)
   }
@@ -23,9 +23,9 @@ export class WsClient<C extends Context = Context> extends Adapter.WsClient<C, O
 }
 
 export namespace WsClient {
-  export interface Config extends SharedConfig<'ws'>, HTTP.Config, Adapter.WsClientConfig {}
+  export interface Options extends SharedConfig<'ws'>, HTTP.Config, Adapter.WsClientConfig {}
 
-  export const Config: Schema<Config> = Schema.intersect([
+  export const Options: Schema<Options> = Schema.intersect([
     Schema.object({
       protocol: Schema.const('ws').required(process.env.KOISHI_ENV !== 'browser'),
       responseTimeout: Schema.natural().role('time').default(Time.minute).description('等待响应的时间 (单位为毫秒)。'),
@@ -37,7 +37,7 @@ export namespace WsClient {
 
 const kSocket = Symbol('socket')
 
-export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotBot.BaseConfig & WsServer.Config>> {
+export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotBot.BaseConfig & WsServer.Options>> {
   static inject = ['server']
 
   public logger: Logger
@@ -47,7 +47,7 @@ export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotB
     super(ctx)
     this.logger = ctx.logger('onebot')
 
-    const { path = '/onebot' } = bot.config as WsServer.Config
+    const { path = '/onebot' } = bot.config as WsServer.Options
     this.wsServer = ctx.server.ws(path, (socket, { headers }) => {
       this.logger.debug('connected with', headers)
       if (headers['x-client-role'] !== 'Universal') {
@@ -74,11 +74,11 @@ export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotB
 }
 
 export namespace WsServer {
-  export interface Config extends SharedConfig<'ws-reverse'> {
+  export interface Options extends SharedConfig<'ws-reverse'> {
     path?: string
   }
 
-  export const Config: Schema<Config> = Schema.object({
+  export const Options: Schema<Options> = Schema.object({
     protocol: Schema.const('ws-reverse').required(process.env.KOISHI_ENV === 'browser'),
     path: Schema.string().description('服务器监听的路径。').default('/onebot'),
     responseTimeout: Schema.natural().role('time').default(Time.minute).description('等待响应的时间 (单位为毫秒)。'),
@@ -91,8 +91,9 @@ const listeners: Record<number, (response: Response) => void> = {}
 export function accept(socket: WebSocket, bot: OneBotBot<Context, OneBotBot.BaseConfig & SharedConfig>) {
   socket.addEventListener('message', ({ data }) => {
     let parsed: any
+    data = data.toString()
     try {
-      parsed = JSON.parse(data.toString())
+      parsed = JSON.parse(data)
     } catch (error) {
       return bot.logger.warn('cannot parse message', data)
     }
