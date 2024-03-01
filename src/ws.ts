@@ -1,6 +1,6 @@
-import { Adapter, Context, Logger, Schema, Time } from 'koishi'
+import { Adapter, Context, Logger, Schema, Time, Universal } from 'koishi'
 import { WebSocketLayer } from '@koishijs/plugin-server'
-import { HTTP, WebSocket } from 'undios'
+import { HTTP } from 'undios'
 import { OneBotBot } from './bot'
 import { dispatchSession, Response, TimeoutError } from './utils'
 
@@ -10,7 +10,7 @@ interface SharedConfig<T = 'ws' | 'ws-reverse'> {
 }
 
 export class WsClient<C extends Context = Context> extends Adapter.WsClient<C, OneBotBot<C, OneBotBot.BaseConfig & WsClient.Options>> {
-  accept(socket: WebSocket): void {
+  accept(socket: Universal.WebSocket): void {
     accept(socket, this.bot)
   }
 
@@ -88,7 +88,7 @@ export namespace WsServer {
 let counter = 0
 const listeners: Record<number, (response: Response) => void> = {}
 
-export function accept(socket: WebSocket, bot: OneBotBot<Context, OneBotBot.BaseConfig & SharedConfig>) {
+export function accept(socket: Universal.WebSocket, bot: OneBotBot<Context, OneBotBot.BaseConfig & SharedConfig>) {
   socket.addEventListener('message', ({ data }) => {
     let parsed: any
     data = data.toString()
