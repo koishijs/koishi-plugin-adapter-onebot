@@ -143,7 +143,7 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
       }
     } else if (type === 'a') {
       await this.render(children)
-      if (attrs.href) this.text(` (${attrs.href}) `)
+      if (attrs.href) this.text(` （${attrs.href}） `)
     } else if (['video', 'audio', 'image', 'img'].includes(type)) {
       if (type === 'audio') type = 'record'
       if (type === 'img') type = 'image'
