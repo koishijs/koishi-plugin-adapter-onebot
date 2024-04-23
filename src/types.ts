@@ -575,10 +575,10 @@ export class Internal {
     return [prop, isAsync] as const
   }
 
-  private static prepareArg(params: string[], args: any[]) {
+  private static prepareArg(name: string, params: string[], args: any[]) {
     const fixedArg = Object.fromEntries(params.map((name, index) => [name, args[index]]))
     for (const key in fixedArg) {
-      if (key.endsWith('_id')) fixedArg[key] = +fixedArg[key]
+      if (!name.includes('guild') && key.endsWith('_id')) fixedArg[key] = +fixedArg[key]
     }
     return fixedArg
   }
@@ -586,22 +586,22 @@ export class Internal {
   static define(name: string, ...params: string[]) {
     const [prop, isAsync] = Internal.prepareMethod(name)
     Internal.prototype[prop] = async function (this: Internal, ...args: any[]) {
-      const data = await this._get(name, Internal.prepareArg(params, args))
+      const data = await this._get(name, Internal.prepareArg(name, params, args))
       if (!isAsync) return data
     }
     isAsync && (Internal.prototype[prop + 'Async'] = async function (this: Internal, ...args: any[]) {
-      await this._get(name + '_async', Internal.prepareArg(params, args))
+      await this._get(name + '_async', Internal.prepareArg(name, params, args))
     })
   }
 
   static defineExtract(name: string, key: string, ...params: string[]) {
     const [prop, isAsync] = Internal.prepareMethod(name)
     Internal.prototype[prop] = async function (this: Internal, ...args: any[]) {
-      const data = await this._get(name, Internal.prepareArg(params, args))
+      const data = await this._get(name, Internal.prepareArg(name, params, args))
       return data[key]
     }
     isAsync && (Internal.prototype[prop + 'Async'] = async function (this: Internal, ...args: any[]) {
-      await this._get(name + '_async', Internal.prepareArg(params, args))
+      await this._get(name + '_async', Internal.prepareArg(name, params, args))
     })
   }
 }
