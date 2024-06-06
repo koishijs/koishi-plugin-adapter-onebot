@@ -1,4 +1,4 @@
-import { Adapter, Context, Quester, Schema } from 'koishi'
+import { Adapter, Context, HTTP, Schema } from 'koishi'
 import {} from '@koishijs/plugin-server'
 import { OneBotBot } from './bot'
 import { dispatchSession } from './utils'
@@ -37,7 +37,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
         if (!signature) return ctx.status = 401
 
         // invalid signature
-        const sig = createHmac('sha1', secret).update(ctx.request.rawBody).digest('hex')
+        const sig = createHmac('sha1', secret).update(ctx.request.body[Symbol.for('unparsedBody')]).digest('hex')
         if (signature !== `sha1=${sig}`) return ctx.status = 403
       }
 
@@ -52,7 +52,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
 }
 
 export namespace HttpServer {
-  export interface Options extends Quester.Config {
+  export interface Options extends HTTP.Config {
     protocol: 'http'
     path?: string
     secret?: string
@@ -64,6 +64,6 @@ export namespace HttpServer {
       path: Schema.string().description('服务器监听的路径。').default('/onebot'),
       secret: Schema.string().description('接收事件推送时用于验证的字段，应该与 OneBot 的 secret 配置保持一致。').role('secret'),
     }).description('连接设置'),
-    Quester.createConfig(true),
+    HTTP.createConfig(true),
   ])
 }

@@ -1,3 +1,4 @@
+import { Session } from 'koishi'
 import { OneBotBot } from './bot'
 import * as OneBot from './utils'
 
@@ -13,7 +14,9 @@ declare module '@satorijs/core' {
   interface Session {
     onebot?: OneBot.Payload & OneBot.Internal
   }
+}
 
+declare module 'koishi' {
   interface Events {
     'onebot/message-reactions-updated'(session: Session): void
     'onebot/channel-updated'(session: Session): void

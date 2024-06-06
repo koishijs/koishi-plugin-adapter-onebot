@@ -1,4 +1,4 @@
-import { Adapter, Context, Logger, Quester, Schema, Time, Universal } from 'koishi'
+import { Adapter, Context, HTTP, Logger, Schema, Time, Universal } from 'koishi'
 import { WebSocketLayer } from '@koishijs/plugin-server'
 import { OneBotBot } from './bot'
 import { dispatchSession, Response, TimeoutError } from './utils'
@@ -22,14 +22,14 @@ export class WsClient<C extends Context = Context> extends Adapter.WsClient<C, O
 }
 
 export namespace WsClient {
-  export interface Options extends SharedConfig<'ws'>, Quester.Config, Adapter.WsClientConfig {}
+  export interface Options extends SharedConfig<'ws'>, HTTP.Config, Adapter.WsClientConfig {}
 
   export const Options: Schema<Options> = Schema.intersect([
     Schema.object({
       protocol: Schema.const('ws').required(process.env.KOISHI_ENV !== 'browser'),
       responseTimeout: Schema.natural().role('time').default(Time.minute).description('等待响应的时间 (单位为毫秒)。'),
     }).description('连接设置'),
-    Quester.createConfig(true),
+    HTTP.createConfig(true),
     Adapter.WsClientConfig,
   ])
 }
