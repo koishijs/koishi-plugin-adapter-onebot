@@ -54,7 +54,8 @@ export class BaseBot<C extends Context = Context, T extends BaseBot.Config = Bas
     await this.internal.deleteFriend(userId)
   }
 
-  async getMessageList(channelId: string, before?: string) {
+  async getMessageList(channelId: string, before?: string, direction: Universal.Direction = 'before') {
+    if (direction !== 'before') throw new Error('Unsupported direction.')
     // include `before` message
     let list: OneBot.Message[]
     if (before) {
