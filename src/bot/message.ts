@@ -146,7 +146,7 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
       // https://github.com/koishijs/koishi-plugin-adapter-onebot/issues/23
       if (attrs.href) this.text(`（${attrs.href}）`)
     } else if (['video', 'audio', 'image', 'img'].includes(type)) {
-      if (type === 'video') await this.flush()
+      if (type === 'video' || type === 'audio') await this.flush()
       if (type === 'audio') type = 'record'
       if (type === 'img') type = 'image'
       attrs = { ...attrs }
