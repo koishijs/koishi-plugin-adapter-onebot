@@ -102,10 +102,12 @@ export async function adaptMessage(
   const [guildId, channelId] = decodeGuildChannelId(data)
   if (message.elements[0]?.type === 'reply') {
     const reply = message.elements.shift()
-    message.quote = await bot.getMessage(channelId, reply.attrs.id).catch((error) => {
-      bot.logger.warn(error)
-      return undefined
-    })
+    if (reply.attrs.id !== '0') {
+      message.quote = await bot.getMessage(channelId, reply.attrs.id).catch((error) => {
+        bot.logger.warn(error)
+        return undefined
+      })
+    }
   }
   message.content = message.elements.join('')
 
