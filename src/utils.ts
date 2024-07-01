@@ -45,9 +45,8 @@ export async function adaptMessage(
   message: Universal.Message = {},
   payload: Universal.MessageLike = message,
 ) {
-//   message.id = message.messageId = data.message_id.toString()
-  message.id = message.messageId = "raw" in data ? data.raw.msgId : data.message_id.toString();
-
+//   message.id = message.messageId = data.message_id.toString() // 原方法
+  message.id = message.messageId = "raw" in data ? data.raw.msgId : data.message_id.toString(); // 检测是否包含 raw 参数以获取正确的 msgId
 
   // message content
   const chain = CQCode.parse(data.message)
