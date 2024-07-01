@@ -45,7 +45,10 @@ export async function adaptMessage(
   message: Universal.Message = {},
   payload: Universal.MessageLike = message,
 ) {
-  message.id = message.messageId = data.message_id.toString()
+//   message.id = message.messageId = data.message_id.toString()
+  bot.logger.info("[Debug] fixed");
+  message.id = message.messageId = "raw" in data ? data.raw.msgId : data.message_id.toString();
+
 
   // message content
   const chain = CQCode.parse(data.message)
