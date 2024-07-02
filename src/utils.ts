@@ -45,7 +45,9 @@ export async function adaptMessage(
   message: Universal.Message = {},
   payload: Universal.MessageLike = message,
 ) {
-  message.id = message.messageId = data.message_id.toString()
+  // https://github.com/LLOneBot/LLOneBot/issues/269
+  // message.id = message.messageId = data.message_id.toString()
+  message.id = message.messageId = 'raw' in data ? data.raw.msgId : data.message_id.toString();
 
   // message content
   const chain = CQCode.parse(data.message)

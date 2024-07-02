@@ -72,6 +72,11 @@ export interface Message extends MessageId {
   channel_id?: string
   message: string | CQCode[]
   anonymous?: AnonymousInfo
+  raw?: RawMessage
+}
+
+export interface RawMessage {
+  msgId: string
 }
 
 export interface AnonymousInfo {
