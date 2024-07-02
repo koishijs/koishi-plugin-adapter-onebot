@@ -76,7 +76,7 @@ export interface Message extends MessageId {
 }
 
 export interface RawMessage {
-    msgId: string
+  msgId: string
 }
 
 export interface AnonymousInfo {
