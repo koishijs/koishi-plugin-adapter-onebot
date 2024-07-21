@@ -77,25 +77,25 @@ export async function adaptMessage(
     image(attrs) {
       return h('img', {
         src: attrs.url || attrs.file,
-        ...omit(attrs, ['url', 'file']),
+        ...omit(attrs, ['url']),
       })
     },
     record(attrs) {
       return h('audio', {
         src: attrs.url || attrs.file,
-        ...omit(attrs, ['url', 'file']),
+        ...omit(attrs, ['url']),
       })
     },
     video(attrs) {
       return h('video', {
         src: attrs.url || attrs.file,
-        ...omit(attrs, ['url', 'file']),
+        ...omit(attrs, ['url']),
       })
     },
     file(attrs) {
       return h('file', {
         src: attrs.url || attrs.file,
-        ...omit(attrs, ['url', 'file']),
+        ...omit(attrs, ['url']),
       })
     },
   })
