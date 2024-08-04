@@ -64,8 +64,8 @@ export async function adaptMessage(
   }
 
   message.elements = h.transform(chain, {
-    at({ qq }) {
-      if (qq !== 'all') return h.at(qq)
+    at(attrs) {
+      if (attrs.qq !== 'all') return h.at(attrs.qq, { name: attrs.name })
       return h('at', { type: 'all' })
     },
     face({ id }) {
