@@ -1,7 +1,6 @@
 import { Context, h, MessageEncoder, pick, Universal } from 'koishi'
 import { BaseBot } from './base'
 import { CQCode } from './cqcode'
-import { fileURLToPath } from 'url'
 
 export interface Author extends Universal.User {
   time?: string | number
@@ -162,11 +161,7 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
       // https://github.com/koishijs/koishi-plugin-adapter-onebot/issues/30
       // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
       const cap = /^data:([\w/.+-]+);base64,/.exec(attrs.file)
-      if (cap) {
-        attrs.file = 'base64://' + attrs.file.slice(cap[0].length)
-      } else if (attrs.file.startsWith('file:')) {
-        attrs.file = fileURLToPath(attrs.file)
-      }
+      if (cap) attrs.file = 'base64://' + attrs.file.slice(cap[0].length)
       this.children.push({ type, data: attrs })
     } else if (type === 'onebot:music') {
       await this.flush()
