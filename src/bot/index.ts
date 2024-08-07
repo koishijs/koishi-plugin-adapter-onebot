@@ -88,7 +88,7 @@ export class OneBotBot<C extends Context, T extends OneBotBot.Config = OneBotBot
   }
 
   async muteGuildMember(guildId: string, userId: string, duration: number) {
-    return this.internal.setGroupBan(guildId, userId, duration / 1000)
+    return this.internal.setGroupBan(guildId, userId, Math.round(duration / 1000))
   }
 
   async muteChannel(channelId: string, guildId?: string, enable?: boolean) {
