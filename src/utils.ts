@@ -1,4 +1,4 @@
-import { h, hyphenate, Universal, omit } from 'koishi'
+import { h, hyphenate, omit, Universal } from 'koishi'
 import * as qface from 'qface'
 import { BaseBot, CQCode } from './bot'
 import * as OneBot from './types'
