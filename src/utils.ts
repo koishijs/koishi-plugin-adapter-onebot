@@ -1,4 +1,4 @@
-import { h, hyphenate, Universal } from 'koishi'
+import { h, hyphenate, omit, Universal } from 'koishi'
 import * as qface from 'qface'
 import { BaseBot, CQCode } from './bot'
 import * as OneBot from './types'
@@ -77,25 +77,25 @@ export async function adaptMessage(
     image(attrs) {
       return h('img', {
         src: attrs.url || attrs.file,
-        ...attrs,
+        ...omit(attrs, ['url']),
       })
     },
     record(attrs) {
       return h('audio', {
         src: attrs.url || attrs.file,
-        ...attrs,
+        ...omit(attrs, ['url']),
       })
     },
     video(attrs) {
       return h('video', {
         src: attrs.url || attrs.file,
-        ...attrs,
+        ...omit(attrs, ['url']),
       })
     },
     file(attrs) {
       return h('file', {
         src: attrs.url || attrs.file,
-        ...attrs,
+        ...omit(attrs, ['url']),
       })
     },
   })
