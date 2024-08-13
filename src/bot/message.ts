@@ -1,4 +1,4 @@
-import { Context, h, MessageEncoder, pick, Universal } from 'koishi'
+import { Context, Dict, h, MessageEncoder, pick, Universal } from 'koishi'
 import { BaseBot } from './base'
 import { CQCode } from './cqcode'
 
@@ -106,6 +106,33 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
     this.children = []
   }
 
+  private async sendFile(attrs: Dict) {
+    const src = attrs.src || attrs.url
+    const filename = attrs.title || (await this.bot.ctx.http.file(src)).filename
+    if (this.session.event.channel.type === Universal.Channel.Type.DIRECT) {
+      await this.bot.internal.uploadPrivateFile(
+        this.channelId.slice(PRIVATE_PFX.length),
+        src,
+        filename,
+      )
+    } else {
+      await this.bot.internal.uploadGroupFile(
+        this.channelId,
+        src,
+        filename,
+      )
+    }
+    const session = this.bot.session()
+    // 相关 API 没有返回 message_id
+    session.messageId = ''
+    session.userId = this.bot.selfId
+    session.channelId = this.session.channelId
+    session.guildId = this.session.guildId
+    session.isDirect = this.session.isDirect
+    session.app.emit(session, 'send', session)
+    this.results.push(session.event.message)
+  }
+
   private text(text: string) {
     this.children.push({ type: 'text', data: { text } })
   }
@@ -145,7 +172,7 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
       await this.render(children)
       // https://github.com/koishijs/koishi-plugin-adapter-onebot/issues/23
       if (attrs.href) this.text(`（${attrs.href}）`)
-    } else if (['video', 'audio', 'image', 'img', 'file'].includes(type)) {
+    } else if (['video', 'audio', 'image', 'img'].includes(type)) {
       if (type === 'video' || type === 'audio') await this.flush()
       if (type === 'audio') type = 'record'
       if (type === 'img') type = 'image'
@@ -163,6 +190,9 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
       const cap = /^data:([\w/.+-]+);base64,/.exec(attrs.file)
       if (cap) attrs.file = 'base64://' + attrs.file.slice(cap[0].length)
       this.children.push({ type, data: attrs })
+    } else if (type === 'file') {
+      await this.flush()
+      await this.sendFile(attrs)
     } else if (type === 'onebot:music') {
       await this.flush()
       this.children.push({ type: 'music', data: attrs })
