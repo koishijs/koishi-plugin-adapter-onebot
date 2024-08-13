@@ -1,6 +1,7 @@
 import { Context, Dict, h, MessageEncoder, pick, Universal } from 'koishi'
 import { BaseBot } from './base'
 import { CQCode } from './cqcode'
+import { fileURLToPath } from 'node:url'
 
 export interface Author extends Universal.User {
   time?: string | number
@@ -110,7 +111,7 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
     const src: string = attrs.src || attrs.url
     const name = attrs.title || (await this.bot.ctx.http.file(src)).filename
     // 本地文件路径
-    const file = src.startsWith('file:') ? src : await this.bot.internal.downloadFile(src)
+    const file = src.startsWith('file:') ? fileURLToPath(src) : await this.bot.internal.downloadFile(src)
     if (this.session.event.channel.type === Universal.Channel.Type.DIRECT) {
       await this.bot.internal.uploadPrivateFile(
         this.channelId.slice(PRIVATE_PFX.length),
