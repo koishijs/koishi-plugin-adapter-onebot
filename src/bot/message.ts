@@ -109,6 +109,7 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
   private async sendFile(attrs: Dict) {
     const src: string = attrs.src || attrs.url
     const name = attrs.title || (await this.bot.ctx.http.file(src)).filename
+    // 本地文件路径
     const file = src.startsWith('file:') ? src : await this.bot.internal.downloadFile(src)
     if (this.session.event.channel.type === Universal.Channel.Type.DIRECT) {
       await this.bot.internal.uploadPrivateFile(
