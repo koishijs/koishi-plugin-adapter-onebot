@@ -578,7 +578,12 @@ export class Internal {
   private static prepareArg(name: string, params: string[], args: any[]) {
     const fixedArg = Object.fromEntries(params.map((name, index) => [name, args[index]]))
     for (const key in fixedArg) {
-      if (!name.includes('guild') && key.endsWith('_id')) fixedArg[key] = +fixedArg[key]
+      if (!name.includes('guild') && key.endsWith('_id')) {
+        const value = +fixedArg[key]
+        if (Math.abs(value) <= 1 << 32) {
+          fixedArg[key] = value
+        }
+      }
     }
     return fixedArg
   }
