@@ -462,8 +462,8 @@ export interface Internal {
   setGroupPortrait(group_id: id, file: string, cache?: boolean): Promise<void>
   setGroupPortraitAsync(group_id: id, file: string, cache?: boolean): Promise<void>
   getGroupAtAllRemain(group_id: id): Promise<AtAllRemain>
-  sendGroupNotice(group_id: id, content: string): Promise<void>
-  sendGroupNoticeAsync(group_id: id, content: string): Promise<void>
+  sendGroupNotice(group_id: id, content: string, image?: string, pinned?: id, confirm_required?: id): Promise<void>
+  sendGroupNoticeAsync(group_id: id, content: string, image?: string, pinned?: id, confirm_required?: id): Promise<void>
   getGroupNotice(group_id: id): Promise<GroupNotice[]>
   delGroupNotice(group_id: id, notice_id: id): Promise<void>
 
@@ -644,7 +644,7 @@ Internal.define('set_group_leave', 'group_id', 'is_dismiss')
 Internal.define('set_group_special_title', 'group_id', 'user_id', 'special_title', 'duration')
 Internal.define('set_group_name', 'group_id', 'group_name')
 Internal.define('set_group_portrait', 'group_id', 'file', 'cache')
-Internal.define('_send_group_notice', 'group_id', 'content')
+Internal.define('_send_group_notice', 'group_id', 'content', 'image', 'pinned', 'confirm_required')
 Internal.define('_get_group_notice', 'group_id')
 Internal.define('_del_group_notice', 'group_id', 'notice_id')
 Internal.define('get_group_at_all_remain', 'group_id')
