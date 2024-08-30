@@ -471,6 +471,8 @@ export interface Internal {
   qidianGetLoginInfo(): Promise<QidianAccountInfo>
   setQqProfile(nickname: string, company: string, email: string, college: string, personal_note: string): Promise<void>
   setQqProfileAsync(nickname: string, company: string, email: string, college: string, personal_note: string): Promise<void>
+  setQqAvatar(file: string): Promise<void>
+  setOnlineStatus(status: string, extStatus: string, batteryStatus: string):Promise<void>
   getVipInfo(): Promise<VipInfo>
   getStrangerInfo(user_id: id, no_cache?: boolean): Promise<StrangerInfo>
   getFriendList(): Promise<FriendInfo[]>
@@ -487,6 +489,11 @@ export interface Internal {
   getGroupRootFiles(group_id: id): Promise<GroupFileList>
   getGroupFilesByFolder(group_id: id, folder_id: string): Promise<GroupFileList>
   getGroupFileUrl(group_id: id, file_id: string, busid: number): Promise<string>
+  getGroupFileCount(group_id: id): Promise<number>
+  getGroupFileList(group_id: id, start_index: number, file_count: number, folder_id?: id): Promise<GroupFileList>
+  setGroupFileFolder(group_id: id, folder_name: string): Promise<GroupFolder>
+  delGroupFile(group_id: id, file_id: id): Promise<void>
+  delGroupFileFolder(group_id: id, folder_id: id): Promise<void>
   downloadFile(url: string, headers?: string | readonly string[], thread_count?: number): Promise<string>
   uploadPrivateFile(user_id: id, file: string, name: string): Promise<void>
   uploadGroupFile(group_id: id, file: string, name: string, folder?: string): Promise<void>
@@ -653,6 +660,8 @@ Internal.define('get_group_at_all_remain', 'group_id')
 Internal.define('get_login_info')
 Internal.define('qidian_get_login_info')
 Internal.define('set_qq_profile', 'nickname', 'company', 'email', 'college', 'personal_note')
+Internal.define("set_qq_avatar", "file")
+Internal.define("set_online_status", "status", "ext_status", "battery_status")
 Internal.define('get_stranger_info', 'user_id', 'no_cache')
 Internal.define('_get_vip_info', 'user_id')
 Internal.define('get_friend_list')
@@ -675,6 +684,11 @@ Internal.define('create_group_file_folder', 'group_id', 'folder_id', 'name')
 Internal.define('delete_group_folder', 'group_id', 'folder_id')
 Internal.define('delete_group_file', 'group_id', 'folder_id', 'file_id', 'busid')
 Internal.defineExtract('get_group_file_url', 'url', 'group_id', 'file_id', 'busid')
+Internal.defineExtract('get_group_file_count', 'group_id')
+Internal.defineExtract('get_group_file_list', 'group_id', "start_index", "file_count", "folder_id")
+Internal.defineExtract('set_group_file_folder', 'group_id', "folder_name")
+Internal.defineExtract('del_group_file', 'group_id', 'file_id')
+Internal.defineExtract('del_group_file_folder', 'group_id', 'folder_id')
 Internal.defineExtract('download_file', 'file', 'url', 'headers', 'thread_count')
 Internal.defineExtract('get_online_clients', 'clients', 'no_cache')
 Internal.defineExtract('check_url_safely', 'level', 'url')
