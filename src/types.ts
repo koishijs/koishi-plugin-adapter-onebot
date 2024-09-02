@@ -472,7 +472,7 @@ export interface Internal {
   setQqProfile(nickname: string, company: string, email: string, college: string, personal_note: string): Promise<void>
   setQqProfileAsync(nickname: string, company: string, email: string, college: string, personal_note: string): Promise<void>
   setQqAvatar(file: string): Promise<void>
-  setOnlineStatus(status: string, extStatus: string, batteryStatus: string):Promise<void>
+  setOnlineStatus(status: string, extStatus: string, batteryStatus: string): Promise<void>
   getVipInfo(): Promise<VipInfo>
   getStrangerInfo(user_id: id, no_cache?: boolean): Promise<StrangerInfo>
   getFriendList(): Promise<FriendInfo[]>
