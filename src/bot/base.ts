@@ -1,6 +1,6 @@
 import { Bot, Context, Schema, Universal } from 'koishi'
 import * as OneBot from '../utils'
-import { OneBotMessageEncoder, PRIVATE_PFX } from './message'
+import { OneBotMessageEncoder } from './message'
 
 export class BaseBot<C extends Context = Context, T extends BaseBot.Config = BaseBot.Config> extends Bot<C, T> {
   static MessageEncoder = OneBotMessageEncoder
@@ -10,7 +10,7 @@ export class BaseBot<C extends Context = Context, T extends BaseBot.Config = Bas
   public internal: OneBot.Internal
 
   async createDirectChannel(userId: string) {
-    return { id: `${PRIVATE_PFX}${userId}`, type: Universal.Channel.Type.DIRECT }
+    return { id: `${OneBot.PRIVATE_PFX}${userId}`, type: Universal.Channel.Type.DIRECT }
   }
 
   async getMessage(channelId: string, messageId: string) {
