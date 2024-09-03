@@ -2,6 +2,7 @@ import { Context, Dict, h, MessageEncoder, pick, Universal } from 'koishi'
 import { BaseBot } from './base'
 import { CQCode } from './cqcode'
 import { fileURLToPath } from 'node:url'
+import { PRIVATE_PFX } from '../utils'
 
 export interface Author extends Universal.User {
   time?: string | number
@@ -14,8 +15,6 @@ class State {
 
   constructor(public type: 'message' | 'forward' | 'reply') { }
 }
-
-export const PRIVATE_PFX = 'private:'
 
 export class OneBotMessageEncoder<C extends Context = Context> extends MessageEncoder<C, BaseBot<C>> {
   stack: State[] = [new State('message')]

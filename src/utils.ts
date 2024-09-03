@@ -3,6 +3,8 @@ import * as qface from 'qface'
 import { BaseBot, CQCode } from './bot'
 import * as OneBot from './types'
 
+export const PRIVATE_PFX = 'private:'
+
 export * from './types'
 
 export const decodeUser = (user: OneBot.AccountInfo): Universal.User => ({
@@ -121,10 +123,10 @@ export async function adaptMessage(
 const decodeGuildChannelId = (data: OneBot.Message) => {
   if (data.guild_id) {
     return [data.guild_id, data.channel_id]
-  } else if (data.group_id) {
-    return [data.group_id.toString(), data.group_id.toString()]
+  } else if (data.message_type === 'private') {
+    return [undefined, PRIVATE_PFX + data.sender.user_id]
   } else {
-    return [undefined, 'private:' + data.sender.user_id]
+    return [data.group_id.toString(), data.group_id.toString()]
   }
 }
 
