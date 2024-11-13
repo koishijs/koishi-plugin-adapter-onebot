@@ -582,7 +582,7 @@ export class Internal {
     for (const key in fixedArg) {
       if (!name.includes('guild') && key.endsWith('_id')) {
         const value = +fixedArg[key]
-        if (Number.isInteger(value) && BigInt(value) < 1n << 31n && BigInt(value) >= -(1n << 31n)) {
+        if (Math.abs(value) < 4294967296) {
           fixedArg[key] = value
         }
       }
