@@ -29,12 +29,15 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
         ? Universal.Channel.Type.DIRECT
         : Universal.Channel.Type.TEXT
     }
-    if (!this.guildId && !this.session.isDirect) this.guildId = this.channelId
+    if (!this.session.isDirect) {
+      this.session.guildId ??= this.channelId
+    }
   }
 
   async forward() {
     if (!this.stack[0].children.length) return
     const session = this.bot.session()
+    session.content = ''
     session.messageId = this.session.event.channel.type === Universal.Channel.Type.DIRECT
       ? '' + await this.bot.internal.sendPrivateForwardMsg(this.channelId.slice(PRIVATE_PFX.length), this.stack[0].children)
       : '' + await this.bot.internal.sendGroupForwardMsg(this.channelId, this.stack[0].children)
@@ -93,8 +96,9 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
     }
 
     const session = this.bot.session()
+    session.content = ''
     session.messageId = this.bot.parent
-      ? '' + await this.bot.internal.sendGuildChannelMsg(this.guildId, this.channelId, this.children)
+      ? '' + await this.bot.internal.sendGuildChannelMsg(this.session.guildId, this.channelId, this.children)
       : this.session.event.channel.type === Universal.Channel.Type.DIRECT
         ? '' + await this.bot.internal.sendPrivateMsg(this.channelId.slice(PRIVATE_PFX.length), this.children)
         : '' + await this.bot.internal.sendGroupMsg(this.channelId, this.children)
@@ -128,6 +132,7 @@ export class OneBotMessageEncoder<C extends Context = Context> extends MessageEn
     const session = this.bot.session()
     // 相关 API 没有返回 message_id
     session.messageId = ''
+    session.content = ''
     session.userId = this.bot.selfId
     session.channelId = this.session.channelId
     session.guildId = this.session.guildId
