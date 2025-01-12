@@ -478,7 +478,7 @@ export interface Internal {
   getFriendList(): Promise<FriendInfo[]>
   getUnidirectionalFriendList(): Promise<UnidirectionalFriendInfo[]>
   getGroupInfo(group_id: id, no_cache?: boolean): Promise<GroupInfo>
-  getGroupList(): Promise<GroupInfo[]>
+  getGroupList(no_cache?: boolean): Promise<GroupInfo[]>
   getGroupMemberInfo(group_id: id, user_id: id, no_cache?: boolean): Promise<GroupMemberInfo>
   getGroupMemberList(group_id: id, no_cache?: boolean): Promise<GroupMemberInfo[]>
   getGroupHonorInfo(group_id: id, type: HonorType): Promise<HonorInfo>
@@ -512,6 +512,7 @@ export interface Internal {
   getVersionInfo(): Promise<VersionInfo>
   setRestart(delay?: number): Promise<void>
   reloadEventFilter(): Promise<void>
+  cleanCache(): Promise<void>
 
   getGuildServiceProfile(): Promise<GuildServiceProfile>
   getGuildList(): Promise<GuildInfo[]>
@@ -520,6 +521,12 @@ export interface Internal {
   getGuildMemberList(guild_id: id, next_token?: string): Promise<GuildMemberListData>
   getGuildMemberProfile(guild_id: id, user_id: id): Promise<GuildMemberProfile>
   sendGuildChannelMsg(guild_id: id, channel_id: id, message: string | readonly CQCode[]): Promise<number>
+
+  uploadImage(file: string): Promise<string>
+  getPrivateFileUrl(user_id: id, file_id: string, file_hash?: string): Promise<string>
+  moveGroupFile(group_id: id, file_id: string, parent_directory: string, target_directory: string): Promise<void>
+  deleteGroupFileFolder(group_id: id, folder_id: string): Promise<void>
+  renameGroupFileFolder(group_id: id, folder_id: string, new_folder_name: string): Promise<void>
 }
 
 export class TimeoutError extends Error {
@@ -569,7 +576,7 @@ export class Internal {
     await this._get('set_group_anonymous_ban_async', args)
   }
 
-  private static asyncPrefixes = ['set', 'send', 'delete', 'create', 'upload']
+  private static asyncPrefixes = ['set', 'send', 'delete', 'create', 'upload', 'move', 'rename']
 
   private static prepareMethod(name: string) {
     const prop = camelize(name.replace(/^[_.]/, ''))
@@ -665,7 +672,7 @@ Internal.define('delete_friend', 'user_id')
 Internal.define('delete_unidirectional_friend', 'user_id')
 
 Internal.define('get_group_info', 'group_id', 'no_cache')
-Internal.define('get_group_list')
+Internal.define('get_group_list', 'no_cache')
 Internal.define('get_group_member_info', 'group_id', 'user_id', 'no_cache')
 Internal.define('get_group_member_list', 'group_id')
 Internal.define('get_group_honor_info', 'group_id', 'type')
@@ -694,6 +701,7 @@ Internal.define('get_status')
 Internal.define('get_version_info')
 Internal.define('set_restart', 'delay')
 Internal.define('reload_event_filter')
+Internal.define('clean_cache')
 
 Internal.define('get_guild_service_profile')
 Internal.define('get_guild_list')
@@ -702,3 +710,13 @@ Internal.define('get_guild_channel_list', 'guild_id', 'no_cache')
 Internal.define('get_guild_member_list', 'guild_id', 'next_token')
 Internal.define('get_guild_member_profile', 'guild_id', 'user_id')
 Internal.defineExtract('send_guild_channel_msg', 'message_id', 'guild_id', 'channel_id', 'message')
+
+// lagrange
+// TODO lagrange 和 gocqhttp 接口并不一致，目前就按照参数多的来写了
+Internal.define('upload_image', 'file')
+Internal.defineExtract('get_private_file_url', 'url', 'user_id', 'file_id', 'file_hash')
+Internal.define('move_group_file', 'group_id', 'file_id', 'parent_directory', 'target_directory')
+// Internal.define('delete_group_file', 'group_id', 'file_id')
+// Internal.define('create_group_file_folder', 'group_id', 'name', 'parent_id')
+Internal.define('delete_group_file_folder', 'group_id', 'folder_id')
+Internal.define('rename_group_file_folder', 'group_id', 'folder_id', 'new_folder_name')
