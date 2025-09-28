@@ -36,6 +36,16 @@ export class OneBotBot<C extends Context, T extends OneBotBot.Config = OneBotBot
     await super.stop()
   }
 
+  async remove() {
+    await this.stop()
+    const index = this.ctx.bots.findIndex((b) => {
+      return b === this
+    })
+    if (index >= 0) {
+      this.ctx.bots.splice(index, 1)
+    }
+  }
+
   async initialize() {
     await Promise.all([
       this.getLogin(),
