@@ -121,7 +121,7 @@ export async function adaptMessage(
 const decodeGuildChannelId = (data: OneBot.Message) => {
   if (data.guild_id) {
     return [data.guild_id, data.channel_id]
-  } else if (data.group_id) {
+  } else if (data.group_id && data.message_type !== 'private') {
     return [data.group_id.toString(), data.group_id.toString()]
   } else {
     return [undefined, 'private:' + data.sender.user_id]
