@@ -108,6 +108,7 @@ export function accept(socket: Universal.WebSocket, bot: OneBotBot<Context, OneB
 
   socket.addEventListener('close', () => {
     delete bot.internal._request
+    bot.offline()
   })
 
   bot.internal._request = (action, params) => {
