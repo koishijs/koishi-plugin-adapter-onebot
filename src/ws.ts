@@ -88,9 +88,9 @@ let counter = 0
 const listeners: Record<number, (response: Response) => void> = {}
 
 export function accept(socket: Universal.WebSocket, bot: OneBotBot<Context, OneBotBot.BaseConfig & SharedConfig>) {
-  socket.addEventListener('message', ({ data }) => {
+  socket.addEventListener('message', (event) => {
     let parsed: any
-    data = data.toString()
+    const data = event.data.toString()
     try {
       parsed = JSON.parse(data)
     } catch (error) {

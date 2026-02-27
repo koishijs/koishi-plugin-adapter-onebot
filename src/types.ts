@@ -407,6 +407,7 @@ export interface File {
 type id = string | number
 
 export interface Internal {
+  sendMsg(user_id: id, group_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<number>
   sendPrivateMsg(user_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<number>
   sendPrivateMsgAsync(user_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<void>
   sendGroupMsg(group_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<number>
@@ -621,6 +622,7 @@ export class Internal {
 }
 
 // messages
+Internal.defineExtract('send_msg', 'message_id', 'user_id', 'group_id', 'message', 'auto_escape')
 Internal.defineExtract('send_private_msg', 'message_id', 'user_id', 'message', 'auto_escape')
 Internal.defineExtract('send_group_msg', 'message_id', 'group_id', 'message', 'auto_escape')
 Internal.defineExtract('send_group_forward_msg', 'message_id', 'group_id', 'messages')
