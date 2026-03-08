@@ -407,6 +407,7 @@ export interface File {
 type id = string | number
 
 export interface Internal {
+  sendMsg(user_id: id, group_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<number>
   sendPrivateMsg(user_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<number>
   sendPrivateMsgAsync(user_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<void>
   sendGroupMsg(group_id: id, message: string | readonly CQCode[], auto_escape?: boolean): Promise<number>
@@ -432,6 +433,7 @@ export interface Internal {
   getWordSlices(content: string): Promise<string[]>
   ocrImage(image: string): Promise<OcrResult>
   getGroupMsgHistory(group_id: id, message_seq?: number): Promise<{ messages: Message[] }>
+  getFriendMsgHistory(user_id: id, message_seq?: number, count?: number, reverseOrder?: boolean): Promise<{ messages: Message[] }>
   deleteFriend(user_id: id): Promise<void>
   deleteFriendAsync(user_id: id): Promise<void>
   deleteUnidirectionalFriend(user_id: id): Promise<void>
@@ -621,6 +623,7 @@ export class Internal {
 }
 
 // messages
+Internal.defineExtract('send_msg', 'message_id', 'user_id', 'group_id', 'message', 'auto_escape')
 Internal.defineExtract('send_private_msg', 'message_id', 'user_id', 'message', 'auto_escape')
 Internal.defineExtract('send_group_msg', 'message_id', 'group_id', 'message', 'auto_escape')
 Internal.defineExtract('send_group_forward_msg', 'message_id', 'group_id', 'messages')
@@ -637,6 +640,7 @@ Internal.define('ocr_image', 'image')
 Internal.defineExtract('get_forward_msg', 'messages', 'message_id')
 Internal.defineExtract('.get_word_slices', 'slices', 'content')
 Internal.define('get_group_msg_history', 'group_id', 'message_seq')
+Internal.defineExtract('get_friend_msg_history', 'messages', 'user_id', 'message_seq', 'count', 'reverseOrder')
 Internal.define('set_friend_add_request', 'flag', 'approve', 'remark')
 Internal.define('set_group_add_request', 'flag', 'sub_type', 'approve', 'reason')
 Internal.defineExtract('_get_model_show', 'variants', 'model')
