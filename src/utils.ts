@@ -1,4 +1,4 @@
-import { h, hyphenate, omit, Universal } from 'koishi'
+import { Context, h, hyphenate, omit, Universal } from 'koishi'
 import * as qface from 'qface'
 import { BaseBot, CQCode } from './bot'
 import * as OneBot from './types'
@@ -16,7 +16,7 @@ export const decodeUser = (user: OneBot.AccountInfo): Universal.User => ({
 export const decodeGuildMember = (user: OneBot.SenderInfo): Universal.GuildMember => ({
   user: decodeUser(user),
   nick: user.card,
-  roles: [user.role],
+  roles: user.role ? [{ id: user.role }] : [],
 })
 
 export const adaptQQGuildMemberInfo = (user: OneBot.GuildMemberInfo): Universal.GuildMember => ({
@@ -26,7 +26,7 @@ export const adaptQQGuildMemberInfo = (user: OneBot.GuildMemberInfo): Universal.
     isBot: user.role_name === '机器人',
   },
   name: user.nickname,
-  roles: user.role_name ? [user.role_name] : [],
+  roles: user.role_name ? [{ id: user.role_name }] : [],
 })
 
 export const adaptQQGuildMemberProfile = (user: OneBot.GuildMemberProfile): Universal.GuildMember => ({
@@ -36,11 +36,11 @@ export const adaptQQGuildMemberProfile = (user: OneBot.GuildMemberProfile): Univ
     isBot: user.roles?.some(r => r.role_name === '机器人'),
   },
   name: user.nickname,
-  roles: user.roles?.map(r => r.role_name) || [],
+  roles: user.roles?.map(r => ({ id: r.role_name })) || [],
 })
 
-export async function adaptMessage(
-  bot: BaseBot,
+export async function adaptMessage<C extends Context>(
+  bot: BaseBot<C>,
   data: OneBot.Message,
   message: Universal.Message = {},
   payload: Universal.MessageLike = message,
@@ -162,7 +162,7 @@ export const adaptChannel = (info: OneBot.GroupInfo | OneBot.ChannelInfo): Unive
   }
 }
 
-export async function dispatchSession(bot: BaseBot, data: OneBot.Payload) {
+export async function dispatchSession<C extends Context>(bot: BaseBot<C>, data: OneBot.Payload) {
   if (data.self_tiny_id) {
     // don't dispatch any guild message without guild initialization
     bot = bot['guildBot']
@@ -175,7 +175,7 @@ export async function dispatchSession(bot: BaseBot, data: OneBot.Payload) {
   bot.dispatch(session)
 }
 
-export async function adaptSession(bot: BaseBot, data: OneBot.Payload) {
+export async function adaptSession<C extends Context>(bot: BaseBot<C>, data: OneBot.Payload) {
   const session = bot.session()
   session.selfId = data.self_tiny_id ? data.self_tiny_id : '' + data.self_id
   session.type = data.post_type

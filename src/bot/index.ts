@@ -105,9 +105,9 @@ export class OneBotBot<C extends Context, T extends OneBotBot.Config = OneBotBot
 
   async checkPermission(name: string, session: Partial<Session>) {
     if (name === 'onebot.group.admin') {
-      return session.author?.roles?.[0] === 'admin'
+      return session.author?.roles?.[0]?.id === 'admin'
     } else if (name === 'onebot.group.owner') {
-      return session.author?.roles?.[0] === 'owner'
+      return session.author?.roles?.[0]?.id === 'owner'
     }
     return super.checkPermission(name, session)
   }
