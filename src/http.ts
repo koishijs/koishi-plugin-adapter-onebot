@@ -48,6 +48,8 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
 
       bot.logger.debug('[receive] %o', ctx.body)
       dispatchSession(bot, ctx.body as OneBot.Payload)
+
+      ctx.status = 204
     })
   }
 }
