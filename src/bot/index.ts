@@ -111,6 +111,14 @@ export class OneBotBot<C extends Context, T extends OneBotBot.Config = OneBotBot
     }
     return super.checkPermission(name, session)
   }
+
+  async createReaction(channelId: string, messageId: string, emojiId: string) {
+    return this.internal.setMsgEmojiLike(messageId, emojiId, true)
+  }
+
+  async deleteReaction(channelId: string, messageId: string, emojiId: string, userId?: string) {
+    return this.internal.setMsgEmojiLike(messageId, emojiId, false)
+  }
 }
 
 export namespace OneBotBot {
