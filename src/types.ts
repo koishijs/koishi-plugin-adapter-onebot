@@ -433,7 +433,7 @@ export interface Internal {
   getWordSlices(content: string): Promise<string[]>
   ocrImage(image: string): Promise<OcrResult>
   getGroupMsgHistory(group_id: id, message_seq?: number): Promise<{ messages: Message[] }>
-  getFriendMsgHistory(user_id: id, message_seq?: number, count?: number, reverseOrder?: boolean): Promise<{ messages: Message[] }>
+  getFriendMsgHistory(user_id: id, message_seq?: number, count?: number, reverseOrder?: boolean): Promise<Message[]>
   deleteFriend(user_id: id): Promise<void>
   deleteFriendAsync(user_id: id): Promise<void>
   deleteUnidirectionalFriend(user_id: id): Promise<void>

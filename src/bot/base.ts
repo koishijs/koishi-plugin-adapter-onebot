@@ -65,10 +65,10 @@ export class BaseBot<C extends Context = Context, T extends BaseBot.Config = Bas
       if (before) {
         const msg = await this.internal.getMsg(before)
         if (msg?.message_seq) {
-          list = (await this.internal.getFriendMsgHistory(userId, msg.message_seq)).messages
+          list = (await this.internal.getFriendMsgHistory(userId, msg.message_seq))
         }
       } else {
-        list = (await this.internal.getFriendMsgHistory(userId)).messages
+        list = (await this.internal.getFriendMsgHistory(userId))
       }
     } else {
       // 群聊频道使用 get_group_msg_history
