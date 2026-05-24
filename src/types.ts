@@ -404,6 +404,13 @@ export interface File {
   url: string
 }
 
+export interface GroupSignedInfo {
+  user_id: number
+  nick: string
+  time: number
+  rank: number
+}
+
 type id = string | number
 
 export interface Internal {
@@ -531,6 +538,7 @@ export interface Internal {
   renameGroupFileFolder(group_id: id, folder_id: string, new_folder_name: string): Promise<void>
 
   setMsgEmojiLike(message_id: id, emoji_id: id, set?: boolean): Promise<void>
+  getGroupSignedList(group_id: id): Promise<GroupSignedInfo[]>
 }
 
 export class TimeoutError extends Error {
@@ -695,6 +703,7 @@ Internal.defineExtract('get_group_file_url', 'url', 'group_id', 'file_id', 'busi
 Internal.defineExtract('download_file', 'file', 'url', 'headers', 'thread_count')
 Internal.defineExtract('get_online_clients', 'clients', 'no_cache')
 Internal.defineExtract('check_url_safely', 'level', 'url')
+Internal.define('get_group_signed_list', 'group_id')
 
 Internal.defineExtract('get_cookies', 'cookies', 'domain')
 Internal.defineExtract('get_csrf_token', 'token')
