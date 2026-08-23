@@ -1,4 +1,4 @@
-import { Adapter, Context, HTTP, Logger, Schema, Time, Universal } from 'koishi'
+import { Adapter, Context, Dict, HTTP, Logger, Schema, Time, Universal } from 'koishi'
 import { WebSocketLayer } from '@koishijs/plugin-server'
 import { OneBotBot } from './bot'
 import { dispatchSession, Response, TimeoutError } from './utils'
@@ -57,7 +57,7 @@ export class WsServer<C extends Context> extends Adapter<C, OneBotBot<C, OneBotB
       if (!bot) return socket.close(1008, 'invalid x-self-id')
 
       bot[kSocket] = socket
-      accept(socket, bot)
+      accept(socket as Universal.WebSocket, bot)
     })
 
     ctx.on('dispose', () => {
@@ -87,8 +87,70 @@ export namespace WsServer {
 let counter = 0
 const listeners: Record<number, (response: Response) => void> = {}
 
-export function accept<C extends Context>(socket: Universal.WebSocket, bot: OneBotBot<C, OneBotBot.BaseConfig & SharedConfig>) {
+interface PendingRequest {
+  reject: (error: Error) => void
+  dispose: () => void
+}
+
+export function accept<C extends Context>(socket: Universal.WebSocket, bot: OneBotBot<C, OneBotBot.Config>) {
+  const responseTimeout = 'responseTimeout' in bot.config ? bot.config.responseTimeout : Time.minute
+  const pending = new Map<number, PendingRequest>()
+  let closed = false
+
+  const request = (action: string, params: Dict): Promise<Response> => {
+    if (closed) return Promise.reject(new Error('OneBot WebSocket connection has closed'))
+    const data = { action, params, echo: ++counter }
+    return new Promise<Response>((resolve, reject) => {
+      // 超时后主动清理，避免 pending 和全局 listeners 一直残留
+      const dispose = bot.ctx.setTimeout(() => {
+        pending.delete(data.echo)
+        delete listeners[data.echo]
+        reject(new TimeoutError(params, action))
+      }, responseTimeout)
+      pending.set(data.echo, { reject, dispose })
+      listeners[data.echo] = (response) => {
+        pending.delete(data.echo)
+        dispose()
+        delete listeners[data.echo]
+        resolve(response)
+      }
+      try {
+        socket.send(JSON.stringify(data))
+      } catch (error) {
+        pending.delete(data.echo)
+        dispose()
+        delete listeners[data.echo]
+        reject(error)
+      }
+    })
+  }
+
+  let disposeContext: () => void = () => {}
+  const cleanup = () => {
+    if (closed) return
+    closed = true
+
+    // 断开时立即拒绝当前连接所有未完成的请求
+    const error = new Error('OneBot WebSocket connection has closed')
+    for (const [echo, pendingRequest] of pending) {
+      delete listeners[echo]
+      pendingRequest.dispose()
+      pendingRequest.reject(error)
+    }
+    pending.clear()
+
+    // 只清理仍属于当前连接的 _request，避免旧连接关闭时误删新连接的状态
+    if (bot.internal._request === request) {
+      bot.internal._request = () => Promise.reject(error)
+      // WsClient 的重连由基类管理，close 时不要覆盖其状态；反向 WS 没有基类重连，仍要置为离线
+      if (bot.config.protocol === 'ws-reverse') bot.offline()
+    }
+    disposeContext()
+  }
+  disposeContext = bot.ctx.on('dispose', cleanup)
+
   socket.addEventListener('message', (event) => {
+    if (closed) return
     let parsed: any
     const data = event.data.toString()
     try {
@@ -106,23 +168,8 @@ export function accept<C extends Context>(socket: Universal.WebSocket, bot: OneB
     }
   })
 
-  socket.addEventListener('close', () => {
-    delete bot.internal._request
-    bot.offline()
-  })
+  socket.addEventListener('close', cleanup)
 
-  bot.internal._request = (action, params) => {
-    const data = { action, params, echo: ++counter }
-    data.echo = ++counter
-    return new Promise((resolve, reject) => {
-      listeners[data.echo] = resolve
-      setTimeout(() => {
-        delete listeners[data.echo]
-        reject(new TimeoutError(params, action))
-      }, bot.config.responseTimeout)
-      socket.send(JSON.stringify(data))
-    })
-  }
-
+  bot.internal._request = request
   bot.initialize()
 }
