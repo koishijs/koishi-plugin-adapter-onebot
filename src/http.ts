@@ -18,7 +18,7 @@ export class HttpServer<C extends Context = Context> extends Adapter<C, OneBotBo
 
     const http = ctx.http.extend(config).extend({
       headers: {
-        'Authorization': `Token ${token}`,
+        ...(token ? { 'Authorization': `Token ${token}` } : {}),
       },
     })
 
