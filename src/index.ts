@@ -13,6 +13,7 @@ export default OneBotBot
 declare module '@satorijs/core' {
   interface Session {
     onebot?: OneBot.Payload & OneBot.Internal
+    subsubtype?: string
   }
 }
 

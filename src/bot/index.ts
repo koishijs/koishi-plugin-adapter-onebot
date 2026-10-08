@@ -36,11 +36,15 @@ export class OneBotBot<C extends Context, T extends OneBotBot.Config = OneBotBot
     await super.stop()
   }
 
-  async initialize() {
+  async initialize(isCurrent = () => true) {
     await Promise.all([
       this.getLogin(),
       this.setupGuildService().catch(noop),
-    ]).then(() => this.online(), error => this.offline(error))
+    ]).then(() => {
+      if (isCurrent()) this.online()
+    }, (error) => {
+      if (isCurrent()) this.offline(error)
+    })
   }
 
   async setupGuildService() {
