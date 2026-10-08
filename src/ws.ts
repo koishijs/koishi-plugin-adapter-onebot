@@ -171,5 +171,5 @@ export function accept<C extends Context>(socket: Universal.WebSocket, bot: OneB
   socket.addEventListener('close', cleanup)
 
   bot.internal._request = request
-  bot.initialize()
+  bot.initialize(() => !closed && bot.internal._request === request)
 }
