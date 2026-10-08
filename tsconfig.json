@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "outDir": "lib",
     "rootDir": "src",
     "target": "es2022",
