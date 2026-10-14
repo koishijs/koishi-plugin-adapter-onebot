@@ -477,7 +477,7 @@ export interface Internal {
   delGroupNotice(group_id: id, notice_id: id): Promise<void>
 
   getLoginInfo(): Promise<AccountInfo>
-  qidianGetLoginInfo(): Promise<QidianAccountInfo>
+  qidianGetAccountInfo(): Promise<QidianAccountInfo>
   setQqProfile(nickname: string, company: string, email: string, college: string, personal_note: string): Promise<void>
   setQqProfileAsync(nickname: string, company: string, email: string, college: string, personal_note: string): Promise<void>
   setQqAvatar(file: string): Promise<void>
@@ -674,7 +674,7 @@ Internal.define('get_group_at_all_remain', 'group_id')
 
 // accounts
 Internal.define('get_login_info')
-Internal.define('qidian_get_login_info')
+Internal.define('qidian_get_account_info')
 Internal.define('set_qq_profile', 'nickname', 'company', 'email', 'college', 'personal_note')
 Internal.define('set_qq_avatar', 'file')
 Internal.define('set_online_status', 'status', 'ext_status', 'battery_status')
